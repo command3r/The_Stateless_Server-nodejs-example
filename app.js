@@ -1,4 +1,5 @@
 var http = require('http');
+var connect = require('connect');
 var parseUrl  = require('url').parse;
 
 var nodeServer = function (req, res) {
