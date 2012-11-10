@@ -1,8 +1,20 @@
 var http = require('http');
 var connect = require('connect');
 var parseUrl  = require('url').parse;
+var fs = require('fs');
 
 connect()
+  .use(function(req, res, next) {
+    var url = parseUrl(req.url);
+
+    if (!url.pathname.match(/public\//)) {
+      return next();
+    } 
+
+    fs.readFile('.' + url.pathname, function(err, buffer) {
+      res.end(buffer.toString());
+    });
+  })
   .use(function (req, res) {
     var url = parseUrl(req.url);
 
