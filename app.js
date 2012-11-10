@@ -1,32 +1,14 @@
 var http = require('http');
 var connect = require('connect');
-var parseUrl  = require('url').parse;
 var fs = require('fs');
 
+var middlewares = require('./middlewares');
+
 connect()
-  .use(function(req, res, next) {
-    var url = parseUrl(req.url);
-
-    if (!url.pathname.match(/public\//)) return next(); 
-
-    fs.readFile('.' + url.pathname, function(err, buffer) {
-      res.end(buffer.toString());
-    });
-  })
+  .use(middlewares.pub)
   .use(connect.json())
-  .use(function(req, res, next) {
-    if (req.method != 'POST') return next();
-
-    var response = { posted_data: req.body };
-    res.writeHead(200, {'Content-Type': 'application/json; charset=UTF-8'});
-    res.end(JSON.stringify(response));
-  })
-  .use(function (req, res) {
-    var url = parseUrl(req.url);
-
-    res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
-    res.end('Opa! Esse é o conteúdo da <strong>' + url.pathname + '</strong>');
-  })
+  .use(middlewares.json)
+  .use(middlewares.any)
   .listen(3000, '127.0.0.1');
 
 console.log('Rodando o servidor em http://localhost:3000/');
